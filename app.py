@@ -2,14 +2,13 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-# ── PAGE CONFIG ──────────────────────────────
+# Page Config
 st.set_page_config(
     page_title="Jakarta CRM Dashboard",
     page_icon="🏙️",
     layout="wide"
 )
 
-# ── CUSTOM CSS ───────────────────────────────
 st.markdown("""
 <style>
 [data-testid="metric-container"] {
@@ -44,7 +43,7 @@ section[data-testid="stSidebar"] { background-color: #F0F5FA; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── LOAD DATA ────────────────────────────────
+# Load Data
 @st.cache_data
 def load_data():
     df = pd.read_csv('crm_jakarta_cleaned.csv',
@@ -59,7 +58,7 @@ df_full = load_data()
 BULAN_ORDER = ['January','February','March','April','May','June',
                'July','August','September','October','November','December']
 
-# ── SIDEBAR FILTERS ──────────────────────────
+# Filter (sidebar)
 with st.sidebar:
     st.markdown("## 🔍 Filter Data")
     st.markdown("---")
@@ -84,12 +83,12 @@ df = df_full[
     df_full['bulan'].between(sel_bulan[0], sel_bulan[1])
 ].copy()
 
-# ── BANNER ───────────────────────────────────
+# Header
 st.markdown("""
 <div style="background:linear-gradient(135deg,#1A3A5C,#2563A8);
             padding:20px 28px; border-radius:12px; margin-bottom:20px;">
   <h1 style="color:white; margin:0; font-size:1.6rem;">
-    🏙️ Jakarta CRM Complaint Dashboard
+    Jakarta CRM Complaint Dashboard
   </h1>
   <p style="color:#B8D0E8; margin:4px 0 0; font-size:0.88rem;">
     Analisis pengaduan warga · Diskominfotik DKI Jakarta · 2019–2020
@@ -101,8 +100,8 @@ if df.empty:
     st.warning("Tidak ada data untuk filter yang dipilih.")
     st.stop()
 
-# ── SECTION 1: OVERVIEW ──────────────────────
-st.markdown('<div class="section-header">📊 Overview</div>',
+# Section 1
+st.markdown('<div class="section-header">Overview</div>',
             unsafe_allow_html=True)
 
 c1, c2, c3, c4 = st.columns(4)
@@ -113,8 +112,8 @@ c4.metric("Jumlah SKPD",            f"{df['skpd'].nunique()}")
 
 st.markdown("---")
 
-# ── SECTION 2: COMPLAINT ANALYSIS ────────────
-st.markdown('<div class="section-header">📋 Complaint Analysis</div>',
+# Section 2
+st.markdown('<div class="section-header">Complaint Analysis</div>',
             unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -152,8 +151,8 @@ with col2:
 
 st.markdown("---")
 
-# ── SECTION 3: SKPD PERFORMANCE ──────────────
-st.markdown('<div class="section-header">🏛️ SKPD Performance</div>',
+# Section 3
+st.markdown('<div class="section-header">SKPD Performance</div>',
             unsafe_allow_html=True)
 
 col3, col4 = st.columns(2)
@@ -193,8 +192,8 @@ with col4:
 
 st.markdown("---")
 
-# ── SECTION 4: RESPONSE TIME ─────────────────
-st.markdown('<div class="section-header">⏱️ Response Time Analysis</div>',
+# Section 4
+st.markdown('<div class="section-header">Response Time Analysis</div>',
             unsafe_allow_html=True)
 
 col5, col6 = st.columns(2)
@@ -235,7 +234,7 @@ with col6:
     fig6.update_xaxes(tickangle=30)
     st.plotly_chart(fig6, use_container_width=True)
 
-# ── FOOTER ───────────────────────────────────
+# footer
 st.markdown("---")
 st.markdown(
     "<div style='text-align:center; color:#8A9BB0; font-size:0.8rem;'>"
