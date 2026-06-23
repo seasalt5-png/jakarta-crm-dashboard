@@ -2,10 +2,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-# Page Config
 st.set_page_config(
     page_title="Jakarta CRM Dashboard",
-    page_icon="",
     layout="wide"
 )
 
@@ -31,8 +29,8 @@ st.markdown("""
     font-weight: 700 !important;
 }
 .section-header {
-    background: linear-gradient(90deg, #1A3A5C, #2563A8);
-    color: white;
+    background: #87ceeb;
+    color: #1A3A5C;
     padding: 9px 16px;
     border-radius: 8px;
     font-size: 1rem;
@@ -40,10 +38,15 @@ st.markdown("""
     margin: 12px 0;
 }
 section[data-testid="stSidebar"] { background-color: #F0F5FA; }
+
+span[data-baseweb="tag"] {
+    background-color: #87ceeb !important;
+    color: #1A3A5C !important;
+}
+span[data-baseweb="tag"] span { color: #1A3A5C !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# Load Data
 @st.cache_data
 def load_data():
     df = pd.read_csv('crm_jakarta_cleaned.csv',
@@ -58,9 +61,9 @@ df_full = load_data()
 BULAN_ORDER = ['January','February','March','April','May','June',
                'July','August','September','October','November','December']
 
-# Filter (sidebar)
 with st.sidebar:
     st.markdown("## Filter Data")
+    st.markdown("---")
 
     sel_tahun = st.multiselect(
         "Tahun", sorted(df_full['tahun'].unique()),
@@ -75,21 +78,16 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Data: data.jakarta.go.id · 2019–2020")
 
-# Apply filter
 df = df_full[
     df_full['tahun'].isin(sel_tahun) &
     df_full['kategori'].isin(sel_kategori) &
     df_full['bulan'].between(sel_bulan[0], sel_bulan[1])
 ].copy()
 
-# Header
 st.markdown("""
-<div style="background:linear(#2563A8);
-            padding:20px 28px; border-radius:12px; margin-bottom:20px;">
-  <h1 style="color:white; margin:0; font-size:1.6rem;">
-    Jakarta CRM Complaint Dashboard
-  </h1>
-  <p style="color:#B8D0E8; margin:4px 0 0; font-size:0.88rem;">
+<div style="background:#87ceeb; padding:20px 28px; border-radius:12px; margin-bottom:20px;">
+  <h1 style="color:#1A3A5C; margin:0; font-size:1.6rem;">Jakarta CRM Complaint Dashboard</h1>
+  <p style="color:#1A3A5C; margin:4px 0 0; font-size:0.88rem;">
     Analisis pengaduan warga · Diskominfotik DKI Jakarta · 2019–2020
   </p>
 </div>
@@ -99,29 +97,22 @@ if df.empty:
     st.warning("Tidak ada data untuk filter yang dipilih.")
     st.stop()
 
-# Section 1
-st.markdown('<div class="section-header">Overview</div>',
-            unsafe_allow_html=True)
+st.markdown('<div class="section-header">Overview</div>', unsafe_allow_html=True)
 
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Total Pengaduan",        f"{len(df):,}")
+c1, c2, c3 = st.columns(3)
+c1.metric("Total Pengaduan",         f"{len(df):,}")
 c2.metric("Rata-rata Response Time", f"{df['response_time'].mean():.1f} hari")
-c3.metric("Median Response Time",    f"{df['response_time'].median():.0f} hari")
-c4.metric("Jumlah SKPD",            f"{df['skpd'].nunique()}")
+c3.metric("Jumlah SKPD",            f"{df['skpd'].nunique()}")
 
 st.markdown("---")
 
-# Section 2
-st.markdown('<div class="section-header">Complaint Analysis</div>',
-            unsafe_allow_html=True)
+st.markdown('<div class="section-header">Complaint Analysis</div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Top 10 Kategori Pengaduan")
-    top_kat = (df['kategori'].value_counts()
-                             .head(10)
-                             .reset_index())
+    top_kat = df['kategori'].value_counts().head(10).reset_index()
     top_kat.columns = ['kategori', 'jumlah']
     fig = px.bar(top_kat.sort_values('jumlah'),
                  x='jumlah', y='kategori', orientation='h',
@@ -135,8 +126,7 @@ with col1:
 
 with col2:
     st.subheader("Tren Pengaduan per Bulan")
-    tren = (df.groupby(['tahun','nama_bulan'])
-              .size().reset_index(name='jumlah'))
+    tren = df.groupby(['tahun','nama_bulan']).size().reset_index(name='jumlah')
     tren['nama_bulan'] = pd.Categorical(tren['nama_bulan'],
                                         categories=BULAN_ORDER, ordered=True)
     tren = tren.sort_values(['tahun','nama_bulan'])
@@ -150,16 +140,13 @@ with col2:
 
 st.markdown("---")
 
-# Section 3
-st.markdown('<div class="section-header">SKPD Performance</div>',
-            unsafe_allow_html=True)
+st.markdown('<div class="section-header">SKPD Performance</div>', unsafe_allow_html=True)
 
 col3, col4 = st.columns(2)
 
 with col3:
     st.subheader("Top 10 SKPD by Volume")
-    top_skpd = (df['skpd'].value_counts()
-                           .head(10).reset_index())
+    top_skpd = df['skpd'].value_counts().head(10).reset_index()
     top_skpd.columns = ['skpd', 'jumlah']
     fig3 = px.bar(top_skpd.sort_values('jumlah'),
                   x='jumlah', y='skpd', orientation='h',
@@ -191,23 +178,20 @@ with col4:
 
 st.markdown("---")
 
-# Section 4
-st.markdown('<div class="section-header">Response Time Analysis</div>',
-            unsafe_allow_html=True)
+st.markdown('<div class="section-header">Response Time Analysis</div>', unsafe_allow_html=True)
 
 col5, col6 = st.columns(2)
 
 with col5:
     st.subheader("Kecepatan Penyelesaian Pengaduan")
-    bins    = pd.cut(df['response_time'],
-                     bins=[-1,0,1,7,30,9999],
-                     labels=['0 hari','1 hari','2–7 hari','8–30 hari','> 30 hari'])
-    resp_bins = (bins.value_counts().sort_index().reset_index())
+    bins = pd.cut(df['response_time'],
+                  bins=[-1,0,1,7,30,9999],
+                  labels=['0 hari','1 hari','2-7 hari','8-30 hari','> 30 hari'])
+    resp_bins = bins.value_counts().sort_index().reset_index()
     resp_bins.columns = ['kategori_waktu','jumlah']
     fig5 = px.bar(resp_bins, x='kategori_waktu', y='jumlah',
                   color='kategori_waktu',
-                  color_discrete_sequence=['#1A3A5C','#2563A8',
-                                           '#4A90D9','#E8B84B','#E05252'],
+                  color_discrete_sequence=['#1A3A5C','#2563A8','#4A90D9','#E8B84B','#E05252'],
                   labels={'kategori_waktu':'','jumlah':'Jumlah Pengaduan'},
                   text='jumlah')
     fig5.update_traces(textposition='outside')
@@ -217,7 +201,7 @@ with col5:
     st.plotly_chart(fig5, use_container_width=True)
 
 with col6:
-    st.subheader("Heatmap Pengaduan: Bulan × Kategori")
+    st.subheader("Heatmap Pengaduan: Bulan x Kategori")
     top8 = df['kategori'].value_counts().head(8).index.tolist()
     df_hm = df[df['kategori'].isin(top8)].copy()
     pivot = (df_hm.groupby(['nama_bulan','kategori'])
@@ -233,7 +217,6 @@ with col6:
     fig6.update_xaxes(tickangle=30)
     st.plotly_chart(fig6, use_container_width=True)
 
-# footer
 st.markdown("---")
 st.markdown(
     "<div style='text-align:center; color:#8A9BB0; font-size:0.8rem;'>"
