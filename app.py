@@ -14,7 +14,7 @@ st.markdown("""
     border: 1px solid #D0DCE8;
     border-radius: 10px;
     padding: 16px 20px;
-    box-shadow: 0 2px 8px rgba(26,58,92,0.07);
+    box-shadow: 0 2px 8px rgba(26,26,104,0.07);
 }
 [data-testid="metric-container"] label {
     color: #5A7A9A !important;
@@ -24,13 +24,13 @@ st.markdown("""
     letter-spacing: 0.04em;
 }
 [data-testid="metric-container"] [data-testid="stMetricValue"] {
-    color: #1A3A5C !important;
+    color: #1a1a68 !important;
     font-size: 1.9rem !important;
     font-weight: 700 !important;
 }
 .section-header {
-    background: #87ceeb;
-    color: #1A3A5C;
+    background: #1a1a68;
+    color: #dadae7;
     padding: 9px 16px;
     border-radius: 8px;
     font-size: 1rem;
@@ -38,12 +38,10 @@ st.markdown("""
     margin: 12px 0;
 }
 section[data-testid="stSidebar"] { background-color: #F0F5FA; }
-
-span[data-baseweb="tag"] {
-    background-color: #87ceeb !important;
-    color: #1A3A5C !important;
+.stMultiSelect span[data-baseweb="tag"] {
+    background-color: #1a1a68 !important;
+    color: #dadae7 !important;
 }
-span[data-baseweb="tag"] span { color: #1A3A5C !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -64,7 +62,6 @@ BULAN_ORDER = ['January','February','March','April','May','June',
 with st.sidebar:
     st.markdown("## Filter Data")
     st.markdown("---")
-
     sel_tahun = st.multiselect(
         "Tahun", sorted(df_full['tahun'].unique()),
         default=sorted(df_full['tahun'].unique())
@@ -74,7 +71,6 @@ with st.sidebar:
         default=sorted(df_full['kategori'].unique())
     )
     sel_bulan = st.slider("Rentang Bulan", 1, 12, (1, 12))
-
     st.markdown("---")
     st.caption("Data: data.jakarta.go.id · 2019–2020")
 
@@ -85,9 +81,9 @@ df = df_full[
 ].copy()
 
 st.markdown("""
-<div style="background:#87ceeb; padding:20px 28px; border-radius:12px; margin-bottom:20px;">
-  <h1 style="color:#1A3A5C; margin:0; font-size:1.6rem;">Jakarta CRM Complaint Dashboard</h1>
-  <p style="color:#1A3A5C; margin:4px 0 0; font-size:0.88rem;">
+<div style="background:#1a1a68; padding:20px 28px; border-radius:12px; margin-bottom:20px;">
+  <h1 style="color:#dadae7; margin:0; font-size:1.6rem;">Jakarta CRM Complaint Dashboard</h1>
+  <p style="color:#dadae7; margin:4px 0 0; font-size:0.88rem; opacity:0.8;">
     Analisis pengaduan warga · Diskominfotik DKI Jakarta · 2019–2020
   </p>
 </div>
@@ -117,7 +113,7 @@ with col1:
     fig = px.bar(top_kat.sort_values('jumlah'),
                  x='jumlah', y='kategori', orientation='h',
                  color='jumlah',
-                 color_continuous_scale=['#A8C8E8','#1A3A5C'],
+                 color_continuous_scale=['#A8C8E8','#1a1a68'],
                  labels={'jumlah':'Jumlah', 'kategori':''})
     fig.update_layout(coloraxis_showscale=False, height=420,
                       margin=dict(l=0,r=0,t=10,b=0),
@@ -132,7 +128,7 @@ with col2:
     tren = tren.sort_values(['tahun','nama_bulan'])
     fig2 = px.line(tren, x='nama_bulan', y='jumlah', color='tahun',
                    markers=True,
-                   color_discrete_map={'2019':'#4A90D9','2020':'#1A3A5C'},
+                   color_discrete_map={'2019':'#4A90D9','2020':'#1a1a68'},
                    labels={'nama_bulan':'','jumlah':'Jumlah','tahun':'Tahun'})
     fig2.update_layout(height=420, margin=dict(l=0,r=0,t=10,b=0),
                        paper_bgcolor='white', plot_bgcolor='#F7F9FC')
@@ -145,13 +141,13 @@ st.markdown('<div class="section-header">SKPD Performance</div>', unsafe_allow_h
 col3, col4 = st.columns(2)
 
 with col3:
-    st.subheader("Top 10 SKPD Berdasarkan Jumlah Pengaduan")
+    st.subheader("Top 10 SKPD by Volume")
     top_skpd = df['skpd'].value_counts().head(10).reset_index()
     top_skpd.columns = ['skpd', 'jumlah']
     fig3 = px.bar(top_skpd.sort_values('jumlah'),
                   x='jumlah', y='skpd', orientation='h',
                   color='jumlah',
-                  color_continuous_scale=['#A8C8E8','#1A3A5C'],
+                  color_continuous_scale=['#A8C8E8','#1a1a68'],
                   labels={'jumlah':'Jumlah','skpd':''})
     fig3.update_layout(coloraxis_showscale=False, height=420,
                        margin=dict(l=0,r=0,t=10,b=0),
@@ -178,7 +174,7 @@ with col4:
 
 st.markdown("---")
 
-st.markdown('<div class="section-header">Response Time Analysis</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header">Analisis Waktu Respon</div>', unsafe_allow_html=True)
 
 col5, col6 = st.columns(2)
 
@@ -186,12 +182,12 @@ with col5:
     st.subheader("Kecepatan Penyelesaian Pengaduan")
     bins = pd.cut(df['response_time'],
                   bins=[-1,0,1,7,30,9999],
-                  labels=['0 hari','1 hari','2-7 hari','8-30 hari','> 30 hari'])
+                  labels=['0 hari','1 hari','2–7 hari','8–30 hari','> 30 hari'])
     resp_bins = bins.value_counts().sort_index().reset_index()
     resp_bins.columns = ['kategori_waktu','jumlah']
     fig5 = px.bar(resp_bins, x='kategori_waktu', y='jumlah',
                   color='kategori_waktu',
-                  color_discrete_sequence=['#1A3A5C','#2563A8','#4A90D9','#E8B84B','#E05252'],
+                  color_discrete_sequence=['#1a1a68','#2563A8','#4A90D9','#E8B84B','#E05252'],
                   labels={'kategori_waktu':'','jumlah':'Jumlah Pengaduan'},
                   text='jumlah')
     fig5.update_traces(textposition='outside')
@@ -221,7 +217,7 @@ st.markdown("---")
 st.markdown(
     "<div style='text-align:center; color:#8A9BB0; font-size:0.8rem;'>"
     "Jakarta CRM Dashboard · Data: "
-    "<a href='https://data.jakarta.go.id' style='color:#2563A8;'>data.jakarta.go.id</a>"
+    "<a href='https://data.jakarta.go.id' style='color:#1a1a68;'>data.jakarta.go.id</a>"
     " · Built with Streamlit"
     "</div>",
     unsafe_allow_html=True
