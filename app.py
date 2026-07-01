@@ -112,7 +112,7 @@ if df.empty:
     st.warning("Tidak ada data untuk filter yang dipilih.")
     st.stop()
 
-st.markdown('<div class="section-header">Overview</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header"># Overview</div>', unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns(3)
 c1.metric("Total Pengaduan",        f"{len(df):,}")
