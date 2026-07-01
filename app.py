@@ -55,7 +55,7 @@ def make_layout(height=420):
     )
 
 with st.sidebar:
-    st.markdown("## Filter Data")
+    st.markdown("##Filter Data")
     st.markdown("---")
     sel_tahun = st.multiselect(
         "Tahun", sorted(df_full['tahun'].unique()),
@@ -67,7 +67,6 @@ with st.sidebar:
     )
     sel_bulan = st.slider("Rentang Bulan", 1, 12, (1, 12))
     st.markdown("---")
-    st.caption("Data: data.jakarta.go.id · 2019–2020")
 
 df = df_full[
     df_full['tahun'].isin(sel_tahun) &
@@ -133,7 +132,7 @@ st.markdown('<div class="section-header">SKPD Performance</div>', unsafe_allow_h
 col3, col4 = st.columns(2)
 
 with col3:
-    st.subheader("Top 10 SKPD by Volume")
+    st.subheader("10 SKPD dengan Jumlah Pengaduan Tertinggi")
     top_skpd = df['skpd'].value_counts().head(10).reset_index()
     top_skpd.columns = ['skpd', 'jumlah']
     fig3 = px.bar(top_skpd.sort_values('jumlah'),
@@ -183,7 +182,7 @@ with col5:
     st.plotly_chart(fig5, use_container_width=True)
 
 with col6:
-    st.subheader("Heatmap Pengaduan: Bulan x Kategori")
+    st.subheader("Matriks Pengaduan Bulanan per Kategori")
     top8 = df['kategori'].value_counts().head(8).index.tolist()
     df_hm = df[df['kategori'].isin(top8)].copy()
     pivot = (df_hm.groupby(['nama_bulan','kategori'])
